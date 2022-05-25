@@ -1,0 +1,29 @@
+{
+  "name": "short-story-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "env-cmd -f ./config/dev.env node src/index.js",
+    "test": "env-cmd -f ./config/test.env jest --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.0",
+    "env-cmd": "^10.1.0",
+    "express": "^4.18.1",
+    "jest": "^28.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.3.4",
+    "nodemailer": "^6.7.5",
+    "request": "^2.88.2",
+    "supertest": "^6.2.3",
+    "validator": "^13.7.0"
+  }
+}
