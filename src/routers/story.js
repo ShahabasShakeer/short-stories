@@ -34,8 +34,10 @@ router.post('/stories', urlencodedParser, authenticate(['writer']), async (req, 
 
 router.get('/stories', async (req, res) => {
     try {
-        // const tasks = await Task.find({owner: req.user._id})
         const stories = await Story.find({approved:true})
+        if (stories.length === 0){
+            return res.status(200).send({info: "There are no stories at the moment"})
+        }
         res.status(200).send(stories)
     } catch (e) {
         console.log(e)
@@ -56,7 +58,6 @@ router.get('/stories/me', authenticate(['writer']), async (req, res) => {
     }
 
     try {
-        // const tasks = await Task.find({owner: req.user._id})
         await req.user.populate({
             path: 'stories',
             match,
@@ -66,6 +67,9 @@ router.get('/stories/me', authenticate(['writer']), async (req, res) => {
                 sort
             }
         })
+        if (req.user.stories.length === 0){
+            return res.status(200).send({info: "You haven't submitted any stories yet"})
+        }
         res.status(200).send(req.user.stories)
     } catch (e) {
         console.log(e)
@@ -76,8 +80,10 @@ router.get('/stories/me', authenticate(['writer']), async (req, res) => {
 router.get('/stories/unapproved', authenticate(['approver']), async (req, res) => {
     try {
         console.log("Getting unapproved stories")
-        // const tasks = await Task.find({owner: req.user._id})
         const stories = await Story.find({approved:false})
+        if (stories.length === 0){
+            return res.status(200).send({info: "There are no unapproved stories at the moment"})
+        }
         res.status(200).send(stories)
     } catch (e) {
         console.log(e)
@@ -87,8 +93,10 @@ router.get('/stories/unapproved', authenticate(['approver']), async (req, res) =
 
 router.get('/stories/all', authenticate(['approver']), async (req, res) => {
     try {
-        // const tasks = await Task.find({owner: req.user._id})
         const stories = await Story.find({})
+        if (stories.length === 0){
+            return res.status(200).send({info: "There are no stories at the moment"})
+        }
         res.status(200).send(stories)
     } catch (e) {
         console.log(e)
@@ -100,7 +108,6 @@ router.get('/stories/:id', authenticate(['approver']), async (req, res) => {
     const _id = req.params.id
 
     try {
-        // const task = await Task.findById(_id)
         const story = await Story.findOne({_id})
         if (!story){
             return res.status(404).send({error:"Story is not found"})
@@ -115,7 +122,6 @@ router.get('/stories/me/:id', authenticate(['writer']), async (req, res) => {
     const _id = req.params.id
 
     try {
-        // const task = await Task.findById(_id)
         const story = await Story.findOne({_id, owner: req.user._id})
         if (!story){
             return res.status(404).send({error:"Story is not found"})
@@ -136,7 +142,6 @@ router.patch('/stories/approve/:id', authenticate(['approver']), async (req, res
     }
 
     try {
-        //const task = await Task.findById(req.params.id)
         const _id = req.params.id
         const story = await Story.findOne({_id})
         updates.forEach((update) => story[update] = req.body[update])
@@ -162,7 +167,6 @@ router.patch('/stories/:id', authenticate(['writer']), async (req, res) => {
     }
 
     try {
-        //const task = await Task.findById(req.params.id)
         const _id = req.params.id
         const story = await Story.findOne({_id, owner: req.user._id})
         updates.forEach((update) => story[update] = req.body[update])
@@ -180,15 +184,14 @@ router.patch('/stories/:id', authenticate(['writer']), async (req, res) => {
 
 router.delete('/stories/:id', authenticate(['writer']), async (req, res) => {
     try {
-        //const task = await Task.findByIdAndDelete(req.params.id)
         console.log("Deleting story")
         const _id = req.params.id
         const story = await Story.findOne({_id, owner: req.user._id})
-        if (!task) {
+        if (!story) {
             return res.status(404).send()
         }
-        await task.remove()
-        res.send("Task has been deleted")
+        await story.remove()
+        res.send("Story has been deleted")
     } catch (e) {
         res.status(500).send()
     }
